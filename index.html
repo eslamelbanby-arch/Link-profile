@@ -33,7 +33,8 @@
       max-width: 420px;
       height: 100dvh;
       background-color: #f7f4ed;
-      background-image: url('bg.png');
+      /* تم ضبط الخلفية لتقرأ ملف profile.png المرفوع لديك */
+      background-image: url('profile.png');
       background-size: 100% 100%;
       background-position: center;
       background-repeat: no-repeat;
@@ -44,15 +45,6 @@
       padding: 1.5dvh 22px 1.2dvh;
       overflow: hidden;
       z-index: 1;
-    }
-
-    .bg-svg {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -1;
-      pointer-events: none;
     }
 
     .profile-section {
@@ -73,8 +65,6 @@
       box-shadow: 0 8px 22px rgba(0, 0, 0, 0.14);
       margin-bottom: 1dvh;
       flex-shrink: 0;
-      cursor: pointer;
-      position: relative;
     }
 
     .avatar-inner-ring {
@@ -85,9 +75,6 @@
       overflow: hidden;
       background-color: #050505;
       position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
 
     .avatar-inner-ring img {
@@ -97,21 +84,6 @@
       object-position: center 18%;
       transform: scale(1.48) translateY(5%);
       transform-origin: center top;
-    }
-
-    .upload-hint {
-      position: absolute;
-      inset: 0;
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background: #0a0a0a;
-      color: #e2c68a;
-      font-size: 10px;
-      text-align: center;
-      padding: 8px;
-      line-height: 1.4;
     }
 
     .name-wrapper {
@@ -262,7 +234,6 @@
       flex-shrink: 0;
     }
 
-    /* الفوتر السفلي وأيقونات العرض فقط (أصغر حجماً وبدون روابط) */
     .footer-area {
       width: 100%;
       display: flex;
@@ -276,7 +247,7 @@
       align-items: center;
       justify-content: center;
       gap: 11px;
-      pointer-events: none; /* صورة فقط غير قابلة للضغط */
+      pointer-events: none;
       user-select: none;
     }
 
@@ -324,50 +295,11 @@
 
   <main class="screen-container">
 
-    <svg class="bg-svg" viewBox="0 0 1024 1536" preserveAspectRatio="none">
-      <defs>
-        <linearGradient id="topGold" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#e3ca96"/>
-          <stop offset="55%" stop-color="#cca662"/>
-          <stop offset="100%" stop-color="#b48839"/>
-        </linearGradient>
-        <linearGradient id="botGold" x1="0%" y1="100%" x2="100%" y2="0%">
-          <stop offset="0%" stop-color="#d4b880"/>
-          <stop offset="100%" stop-color="#f2e6ce"/>
-        </linearGradient>
-        <linearGradient id="botLeftGlow" x1="0%" y1="100%" x2="100%" y2="0%">
-          <stop offset="0%" stop-color="#e5d8c1"/>
-          <stop offset="100%" stop-color="#f4efe6" stop-opacity="0.4"/>
-        </linearGradient>
-      </defs>
-      <path d="M0,0 L385,0 C295,195 165,355 0,465 Z" fill="#f1ece1"/>
-      <path d="M0,0 L260,0 C190,110 95,170 0,190 Z" fill="url(#topGold)"/>
-      <path d="M312,0 C235,145 120,220 0,242" fill="none" stroke="#c59c47" stroke-width="3.2"/>
-
-      <path d="M0,1536 L0,1360 C65,1250 115,1205 142,1190 C125,1275 85,1355 0,1430 Z" fill="#efe9de"/>
-      <path d="M0,1395 C105,1415 190,1465 242,1536 L0,1536 Z" fill="url(#botLeftGlow)"/>
-      <g fill="#bfa063">
-        <path d="M0,1510 C22,1445 52,1385 98,1335 C78,1382 42,1442 0,1510 Z"/>
-        <path d="M12,1475 C42,1442 75,1420 103,1412 C82,1445 52,1468 12,1475 Z"/>
-        <path d="M22,1415 C52,1372 85,1342 116,1332 C95,1372 62,1402 22,1415 Z"/>
-        <path d="M25,1390 C20,1348 28,1315 42,1292 C52,1322 45,1358 25,1390 Z"/>
-        <path d="M0,1435 C-5,1398 2,1368 12,1348 C22,1375 18,1408 0,1435 Z"/>
-      </g>
-
-      <path d="M740,1536 C800,1405 900,1320 1024,1282 L1024,1536 Z" fill="url(#botGold)"/>
-      <path d="M740,1536 C800,1405 900,1320 1024,1282" fill="none" stroke="#c59f50" stroke-width="3.2"/>
-      <path d="M803,1536 C855,1420 935,1348 1024,1315 L1024,1536 Z" fill="#373633"/>
-    </svg>
-
     <header class="profile-section">
-      <input type="file" id="photoInput" accept="image/*" hidden />
-      <div class="avatar-outer-ring" onclick="document.getElementById('photoInput').click()" title="اضغط لاختيار صورتك الشخصية">
+      <div class="avatar-outer-ring">
         <div class="avatar-inner-ring">
-          <img id="profileImg" src="profile.png" alt="ESLAM ELBANBY" onerror="this.style.display='none'; document.getElementById('uploadHint').style.display='flex';" />
-          <div id="uploadHint" class="upload-hint">
-            <span>اضغط هنا لاختيار</span>
-            <strong>الصورة الشخصية</strong>
-          </div>
+          <!-- تم ضبط الدائرة لتقرأ صورتك الشخصية المرفوعة باسم bg.png -->
+          <img src="bg.png" alt="ESLAM ELBANBY" />
         </div>
       </div>
 
@@ -386,7 +318,6 @@
 
     <section class="cards-container">
 
-      <!-- 1. Website -->
       <a href="https://eslamelbanby-arch.github.io/eb-office/" target="_blank" rel="noopener" class="card-item">
         <div class="card-left">
           <div class="icon-box icon-web">
@@ -406,7 +337,6 @@
         <svg class="arrow-icon" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
       </a>
 
-      <!-- 2. WhatsApp -->
       <a href="https://wa.me/201207641934" target="_blank" rel="noopener" class="card-item">
         <div class="card-left">
           <div class="icon-box icon-wa">
@@ -422,7 +352,6 @@
         <svg class="arrow-icon" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
       </a>
 
-      <!-- 3. Email -->
       <a href="mailto:eslamelbanby1@gmail.com" class="card-item">
         <div class="card-left">
           <div class="icon-box icon-mail">
@@ -442,7 +371,6 @@
         <svg class="arrow-icon" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
       </a>
 
-      <!-- 4. Facebook -->
       <a href="https://www.facebook.com/share/1HoZdexZeE/" target="_blank" rel="noopener" class="card-item">
         <div class="card-left">
           <div class="icon-box icon-fb">
@@ -458,7 +386,6 @@
         <svg class="arrow-icon" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
       </a>
 
-      <!-- 5. Facebook Page -->
       <a href="https://www.facebook.com/eboffice.eg" target="_blank" rel="noopener" class="card-item">
         <div class="card-left">
           <div class="icon-box icon-fbpage">
@@ -474,7 +401,6 @@
         <svg class="arrow-icon" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
       </a>
 
-      <!-- 6. LinkedIn -->
       <a href="https://www.linkedin.com/in/eslam-elbanby" target="_blank" rel="noopener" class="card-item">
         <div class="card-left">
           <div class="icon-box icon-in">
@@ -490,7 +416,6 @@
         <svg class="arrow-icon" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
       </a>
 
-      <!-- 7. Instagram -->
       <a href="https://www.instagram.com/eslam_elbanby?stkn=MWN3NjFrOGJlN3o4dQ==" target="_blank" rel="noopener" class="card-item">
         <div class="card-left">
           <div class="icon-box icon-ig">
@@ -508,7 +433,6 @@
         <svg class="arrow-icon" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
       </a>
 
-      <!-- 8. TikTok -->
       <a href="https://www.tiktok.com/@eslam.elbanby" target="_blank" rel="noopener" class="card-item">
         <div class="card-left">
           <div class="icon-box icon-tt">
@@ -526,7 +450,6 @@
         <svg class="arrow-icon" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
       </a>
 
-      <!-- 9. GitHub -->
       <a href="https://github.com/eslamelbanby-arch/" target="_blank" rel="noopener" class="card-item">
         <div class="card-left">
           <div class="icon-box icon-gh">
@@ -544,7 +467,6 @@
 
     </section>
 
-    <!-- الأيقونات السفلية: صور فقط (div بدون روابط) وبحجم أصغر -->
     <footer class="footer-area">
       <div class="bottom-socials" aria-hidden="true">
         <div class="social-circle icon-ig">
@@ -590,22 +512,6 @@
     </footer>
 
   </main>
-
-  <script>
-    document.getElementById('photoInput').addEventListener('change', function(e) {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(evt) {
-          const img = document.getElementById('profileImg');
-          img.src = evt.target.result;
-          img.style.display = 'block';
-          document.getElementById('uploadHint').style.display = 'none';
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-  </script>
 
 </body>
 </html>
