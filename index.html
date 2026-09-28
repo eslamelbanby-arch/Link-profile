@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 
   <style>
     * {
@@ -33,7 +34,6 @@
       max-width: 420px;
       height: 100dvh;
       background-color: #f7f4ed;
-      /* تم ضبط الخلفية لتقرأ ملف profile.png المرفوع لديك */
       background-image: url('profile.png');
       background-size: 100% 100%;
       background-position: center;
@@ -45,6 +45,29 @@
       padding: 1.5dvh 22px 1.2dvh;
       overflow: hidden;
       z-index: 1;
+    }
+
+    /* زر فتح وتحميل كارت الباركود */
+    .qr-trigger-btn {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1.5px solid #c8a35a;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 10;
+      transition: transform 0.15s ease;
+    }
+
+    .qr-trigger-btn:active {
+      transform: scale(0.93);
     }
 
     .profile-section {
@@ -289,17 +312,83 @@
       font-weight: 800;
       margin: 0 2px;
     }
+
+    /* نافذة عرض وتحميل كارت الباركود */
+    .qr-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.82);
+      backdrop-filter: blur(6px);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 999;
+    }
+
+    .qr-modal.active {
+      display: flex;
+    }
+
+    .qr-preview-img {
+      max-width: 88vw;
+      max-height: 75dvh;
+      border-radius: 18px;
+      box-shadow: 0 12px 35px rgba(0,0,0,0.45);
+      object-fit: contain;
+    }
+
+    .qr-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .btn-download, .btn-close {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      padding: 11px 22px;
+      border-radius: 25px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-download {
+      background: linear-gradient(135deg, #d4b26f, #b68d40);
+      color: #ffffff;
+      box-shadow: 0 4px 15px rgba(182, 141, 64, 0.4);
+    }
+
+    .btn-close {
+      background: #ffffff;
+      color: #1c1c1c;
+    }
   </style>
 </head>
 <body>
 
   <main class="screen-container">
 
+    <!-- زر الباركود أعلى اليمين -->
+    <button class="qr-trigger-btn" onclick="openQrModal()" title="عرض وتحميل الباركود">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#1c1c1c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="7" height="7"></rect>
+        <rect x="14" y="3" width="7" height="7"></rect>
+        <rect x="14" y="14" width="7" height="7"></rect>
+        <rect x="3" y="14" width="7" height="7"></rect>
+      </svg>
+    </button>
+
     <header class="profile-section">
       <div class="avatar-outer-ring">
         <div class="avatar-inner-ring">
-          <!-- تم ضبط الدائرة لتقرأ صورتك الشخصية المرفوعة باسم bg.png -->
-          <img src="bg.png" alt="ESLAM ELBANBY" />
+          <img id="avatarImg" src="bg.png" alt="ESLAM ELBANBY" crossorigin="anonymous" />
         </div>
       </div>
 
@@ -317,16 +406,11 @@
     </header>
 
     <section class="cards-container">
-
       <a href="https://eslamelbanby-arch.github.io/eb-office/" target="_blank" rel="noopener" class="card-item">
         <div class="card-left">
           <div class="icon-box icon-web">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.6">
-              <circle cx="12" cy="12" r="9.5"/>
-              <ellipse cx="12" cy="12" rx="4.5" ry="9.5"/>
-              <line x1="12" y1="2.5" x2="12" y2="21.5"/>
-              <line x1="3.2" y1="9" x2="20.8" y2="9"/>
-              <line x1="3.2" y1="15" x2="20.8" y2="15"/>
+              <circle cx="12" cy="12" r="9.5"/><ellipse cx="12" cy="12" rx="4.5" ry="9.5"/><line x1="12" y1="2.5" x2="12" y2="21.5"/><line x1="3.2" y1="9" x2="20.8" y2="9"/><line x1="3.2" y1="15" x2="20.8" y2="15"/>
             </svg>
           </div>
           <div class="card-info">
@@ -356,11 +440,7 @@
         <div class="card-left">
           <div class="icon-box icon-mail">
             <svg width="22" height="22" viewBox="0 0 48 48">
-              <path fill="#4caf50" d="M45,16.2l-5,2.75l-5,4.75L35,40h7c1.657,0,3-1.343,3-3V16.2z"/>
-              <path fill="#1e88e5" d="M3,16.2l3.614,1.71L13,23.7V40H6c-1.657,0-3-1.343-3-3V16.2z"/>
-              <polygon fill="#e53935" points="35,11.2 24,19.45 13,11.2 12,17 13,23.7 24,31.95 35,23.7 36,17"/>
-              <path fill="#c62828" d="M3,12.298V16.2l10,7.5V11.2L9.876,8.859C9.132,8.301,8.228,8,7.298,8h0C4.924,8,3,9.924,3,12.298z"/>
-              <path fill="#fbc02d" d="M45,12.298V16.2l-10,7.5V11.2l3.124-2.341C38.868,8.301,39.772,8,40.702,8h0 C43.076,8,45,9.924,45,12.298z"/>
+              <path fill="#4caf50" d="M45,16.2l-5,2.75l-5,4.75L35,40h7c1.657,0,3-1.343,3-3V16.2z"/><path fill="#1e88e5" d="M3,16.2l3.614,1.71L13,23.7V40H6c-1.657,0-3-1.343-3-3V16.2z"/><polygon fill="#e53935" points="35,11.2 24,19.45 13,11.2 12,17 13,23.7 24,31.95 35,23.7 36,17"/><path fill="#c62828" d="M3,12.298V16.2l10,7.5V11.2L9.876,8.859C9.132,8.301,8.228,8,7.298,8h0C4.924,8,3,9.924,3,12.298z"/><path fill="#fbc02d" d="M45,12.298V16.2l-10,7.5V11.2l3.124-2.341C38.868,8.301,39.772,8,40.702,8h0 C43.076,8,45,9.924,45,12.298z"/>
             </svg>
           </div>
           <div class="card-info">
@@ -420,9 +500,7 @@
         <div class="card-left">
           <div class="icon-box icon-ig">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
-              <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
             </svg>
           </div>
           <div class="card-info">
@@ -464,31 +542,19 @@
         </div>
         <svg class="arrow-icon" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
       </a>
-
     </section>
 
     <footer class="footer-area">
       <div class="bottom-socials" aria-hidden="true">
         <div class="social-circle icon-ig">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
-            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
-          </svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
         </div>
-
         <div class="social-circle icon-fb">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="#ffffff">
-            <path d="M15.12 5.32H17V2.14A26.11 26.11 0 0 0 14.26 2c-2.72 0-4.58 1.66-4.58 4.7v2.62H6.61v3.56h3.07V22h3.68v-9.12h3.06l.46-3.56h-3.52V6.65c0-1.05.29-1.73 1.76-1.73Z"/>
-          </svg>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="#ffffff"><path d="M15.12 5.32H17V2.14A26.11 26.11 0 0 0 14.26 2c-2.72 0-4.58 1.66-4.58 4.7v2.62H6.61v3.56h3.07V22h3.68v-9.12h3.06l.46-3.56h-3.52V6.65c0-1.05.29-1.73 1.76-1.73Z"/></svg>
         </div>
-
         <div class="social-circle icon-in">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="#ffffff">
-            <path d="M6.94 5a2 2 0 1 1-4-.002 2 2 0 0 1 4 .002zM7 8.48H3V21h4V8.48zm6.32 0H9.34V21h3.94v-6.57c0-3.66 4.77-4 4.77 0V21H22v-7.93c0-6.17-7.06-5.94-8.72-2.91l.04-1.68z"/>
-          </svg>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="#ffffff"><path d="M6.94 5a2 2 0 1 1-4-.002 2 2 0 0 1 4 .002zM7 8.48H3V21h4V8.48zm6.32 0H9.34V21h3.94v-6.57c0-3.66 4.77-4 4.77 0V21H22v-7.93c0-6.17-7.06-5.94-8.72-2.91l.04-1.68z"/></svg>
         </div>
-
         <div class="social-circle icon-tt">
           <svg width="13" height="13" viewBox="0 0 24 24">
             <path fill="#25F4EE" d="M15.5 3h-2.6v11.6c0 1.4-1.1 2.5-2.5 2.5s-2.5-1.1-2.5-2.5 1.1-2.5 2.5-2.5c.3 0 .5 0 .8.1V9.5c-.3 0-.5-.1-.8-.1-2.9 0-5.2 2.3-5.2 5.2s2.3 5.2 5.2 5.2 5.2-2.3 5.2-5.2V9.1c1.1.8 2.4 1.3 3.9 1.3V7.8c-2.2 0-4-1.8-4-4.8z" transform="translate(-0.8, -0.6)"/>
@@ -496,11 +562,8 @@
             <path fill="#ffffff" d="M15.5 3h-2.6v11.6c0 1.4-1.1 2.5-2.5 2.5s-2.5-1.1-2.5-2.5 1.1-2.5 2.5-2.5c.3 0 .5 0 .8.1V9.5c-.3 0-.5-.1-.8-.1-2.9 0-5.2 2.3-5.2 5.2s2.3 5.2 5.2 5.2 5.2-2.3 5.2-5.2V9.1c1.1.8 2.4 1.3 3.9 1.3V7.8c-2.2 0-4-1.8-4-4.8z"/>
           </svg>
         </div>
-
         <div class="social-circle icon-gh">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="#ffffff">
-            <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2Z"/>
-          </svg>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="#ffffff"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2Z"/></svg>
         </div>
       </div>
 
@@ -513,5 +576,257 @@
 
   </main>
 
+  <!-- نافذة عرض وتحميل كارت الباركود -->
+  <div class="qr-modal" id="qrModal">
+    <img id="qrPreviewImg" class="qr-preview-img" alt="EB OFFICE QR Card" />
+    <div class="qr-actions">
+      <a id="downloadQrBtn" class="btn-download" download="EB_OFFICE_QR_Card.png">📥 تحميل الكارت كصورة</a>
+      <button class="btn-close" onclick="closeQrModal()">إغلاق</button>
+    </div>
+  </div>
+
+  <script>
+    const TARGET_URL = "https://eslamelbanby-arch.github.io/Link-profile/";
+
+    function loadImage(src) {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.onload = () => resolve(img);
+        img.onerror = () => resolve(null);
+        img.src = src;
+      });
+    }
+
+    async function generateQrCard() {
+      const canvas = document.createElement("canvas");
+      const W = 900, H = 1350;
+      canvas.width = W;
+      canvas.height = H;
+      const ctx = canvas.getContext("2d");
+
+      const [bgImg, avatarImg] = await Promise.all([
+        loadImage("profile.png"),
+        loadImage("bg.png")
+      ]);
+
+      // 1. رسم الخلفية
+      if (bgImg) {
+        ctx.drawImage(bgImg, 0, 0, W, H);
+      } else {
+        ctx.fillStyle = "#f4efe6";
+        ctx.fillRect(0, 0, W, H);
+      }
+
+      // 2. رسم الكارت الأبيض الداخلي بإطار ذهبي
+      const pW = 740, pH = 960, pX = (W - pW) / 2, pY = 190;
+      ctx.save();
+      ctx.shadowColor = "rgba(0, 0, 0, 0.12)";
+      ctx.shadowBlur = 28;
+      ctx.shadowOffsetY = 10;
+      ctx.fillStyle = "rgba(253, 251, 247, 0.97)";
+      ctx.beginPath();
+      ctx.roundRect(pX, pY, pW, pH, 40);
+      ctx.fill();
+      ctx.restore();
+
+      ctx.strokeStyle = "#d5ba82";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.roundRect(pX, pY, pW, pH, 40);
+      ctx.stroke();
+
+      // 3. كتابة الاسم وعلامة التوثيق والشعار
+      ctx.textAlign = "center";
+      ctx.font = "800 36px 'Montserrat', sans-serif";
+      ctx.fillStyle = "#1c1c1c";
+      const nameText = "ESLAM ELBANBY";
+      const nameWidth = ctx.measureText(nameText).width;
+      const nameX = W / 2 - 18;
+      const nameY = pY + 75;
+      ctx.fillText(nameText, nameX, nameY);
+
+      // علامة التوثيق الزرقاء
+      const badgeX = nameX + nameWidth / 2 + 24;
+      const badgeY = nameY - 13;
+      ctx.fillStyle = "#0875F7";
+      ctx.beginPath();
+      ctx.arc(badgeX, badgeY, 15, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "#ffffff";
+      ctx.lineWidth = 3;
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      ctx.beginPath();
+      ctx.moveTo(badgeX - 6, badgeY + 0.5);
+      ctx.lineTo(badgeX - 1.5, badgeY + 5);
+      ctx.lineTo(badgeX + 7, badgeY - 4.5);
+      ctx.stroke();
+
+      // EB OFFICE
+      ctx.font = "800 28px 'Montserrat', sans-serif";
+      const ebW = ctx.measureText("EB ").width;
+      const offW = ctx.measureText("OFFICE").width;
+      const startBrandX = (W - (ebW + offW)) / 2;
+      ctx.textAlign = "left";
+      ctx.fillStyle = "#e29d00";
+      ctx.fillText("EB ", startBrandX, nameY + 46);
+      ctx.fillStyle = "#1c1c1c";
+      ctx.fillText("OFFICE", startBrandX + ebW, nameY + 46);
+
+      // الوصف والخط الذهبي
+      ctx.textAlign = "center";
+      ctx.font = "600 19px 'Montserrat', sans-serif";
+      ctx.fillStyle = "#3a3a3a";
+      ctx.fillText("Business & Degtal solutions", W / 2, nameY + 82);
+
+      ctx.strokeStyle = "#c8a253";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(W / 2 - 35, nameY + 102);
+      ctx.lineTo(W / 2 + 35, nameY + 102);
+      ctx.stroke();
+
+      // 4. إنشاء الباركود الفعلي القابل للمسح الفوري (Error Correction H)
+      const qr = qrcode(0, "H");
+      qr.addData(TARGET_URL);
+      qr.make();
+      const count = qr.getModuleCount();
+
+      const qrBoxSize = 580;
+      const qrBoxX = (W - qrBoxSize) / 2;
+      const qrBoxY = pY + 205;
+
+      ctx.fillStyle = "#faf7f2";
+      ctx.fillRect(qrBoxX, qrBoxY, qrBoxSize, qrBoxSize);
+
+      const quiet = 2.5;
+      const scale = qrBoxSize / (count + quiet * 2);
+      const centerMod = (count - 1) / 2;
+      const avatarModRadius = 4.6; // مساحة آمنة تضمن قراءة الباركود 100%
+
+      function isFinder(r, c) {
+        if (r <= 6 && c <= 6) return true;
+        if (r <= 6 && c >= count - 7) return true;
+        if (r >= count - 7 && c <= 6) return true;
+        return false;
+      }
+
+      // رسم نقاط الباركود الناعمة
+      ctx.fillStyle = "#191715";
+      for (let r = 0; r < count; r++) {
+        for (let c = 0; c < count; c++) {
+          if (isFinder(r, c)) continue;
+          const dist = Math.hypot(r - centerMod, c - centerMod);
+          if (dist < avatarModRadius) continue;
+
+          if (qr.isDark(r, c)) {
+            const x = qrBoxX + (c + quiet) * scale;
+            const y = qrBoxY + (r + quiet) * scale;
+            ctx.beginPath();
+            ctx.roundRect(x + 0.8, y + 0.8, scale - 1.6, scale - 1.6, 3.2);
+            ctx.fill();
+          }
+        }
+      }
+
+      // رسم مربعات الزوايا الثلاثة (إطار أسود + قلب ذهبي داكن تقرأه الكاميرا فوراً)
+      function drawCustomFinder(row, col) {
+        const x = qrBoxX + (col + quiet) * scale;
+        const y = qrBoxY + (row + quiet) * scale;
+        const sz = 7 * scale;
+
+        ctx.fillStyle = "#191715";
+        ctx.beginPath();
+        ctx.roundRect(x, y, sz, sz, 16);
+        ctx.fill();
+
+        ctx.fillStyle = "#faf7f2";
+        ctx.beginPath();
+        ctx.roundRect(x + scale, y + scale, sz - 2 * scale, sz - 2 * scale, 11);
+        ctx.fill();
+
+        // درجة ذهبي غامق متوافقة 100% مع مستشعرات كاميرا الموبايل
+        ctx.fillStyle = "#8B651B";
+        ctx.beginPath();
+        ctx.roundRect(x + 2 * scale, y + 2 * scale, sz - 4 * scale, sz - 4 * scale, 9);
+        ctx.fill();
+      }
+
+      drawCustomFinder(0, 0);
+      drawCustomFinder(0, count - 7);
+      drawCustomFinder(count - 7, 0);
+
+      // 5. رسم الصورة الشخصية الدائرية في منتصف الباركود
+      const cx = qrBoxX + qrBoxSize / 2;
+      const cy = qrBoxY + qrBoxSize / 2;
+      const rad = avatarModRadius * scale;
+
+      ctx.fillStyle = "#faf7f2";
+      ctx.beginPath();
+      ctx.arc(cx, cy, rad + 8, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = "#c8a253";
+      ctx.beginPath();
+      ctx.arc(cx, cy, rad + 4, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = "#faf7f2";
+      ctx.beginPath();
+      ctx.arc(cx, cy, rad, 0, Math.PI * 2);
+      ctx.fill();
+
+      if (avatarImg) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(cx, cy, rad - 3, 0, Math.PI * 2);
+        ctx.clip();
+
+        ctx.fillStyle = "#050505";
+        ctx.fillRect(cx - rad, cy - rad, rad * 2, rad * 2);
+
+        const sw = avatarImg.width * 0.72;
+        const sh = avatarImg.width * 0.72;
+        const sx = (avatarImg.width - sw) / 2;
+        const sy = avatarImg.height * 0.05;
+        ctx.drawImage(avatarImg, sx, sy, sw, sh, cx - rad + 3, cy - rad + 3, (rad - 3) * 2, (rad - 3) * 2);
+        ctx.restore();
+      }
+
+      // 6. كتابة SCAN TO CONNECT بالأسفل
+      const footY = qrBoxY + qrBoxSize + 62;
+      ctx.font = "800 22px 'Montserrat', sans-serif";
+      ctx.fillStyle = "#1a1815";
+      ctx.textAlign = "center";
+      ctx.fillText("SCAN TO CONNECT", W / 2, footY);
+
+      ctx.strokeStyle = "#d5ba82";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(W / 2 - 245, footY - 7);
+      ctx.lineTo(W / 2 - 135, footY - 7);
+      ctx.moveTo(W / 2 + 135, footY - 7);
+      ctx.lineTo(W / 2 + 245, footY - 7);
+      ctx.stroke();
+
+      const dataUrl = canvas.toDataURL("image/png");
+      document.getElementById("qrPreviewImg").src = dataUrl;
+      document.getElementById("downloadQrBtn").href = dataUrl;
+    }
+
+    async function openQrModal() {
+      const modal = document.getElementById("qrModal");
+      modal.classList.add("active");
+      if (!document.getElementById("qrPreviewImg").src) {
+        await document.fonts.ready;
+        await generateQrCard();
+      }
+    }
+
+    function closeQrModal() {
+      document.getElementById("qrModal").classList.remove("active");
+    }
+  </script>
 </body>
 </html>
