@@ -47,29 +47,6 @@
       z-index: 1;
     }
 
-    /* زر فتح وتحميل كارت الباركود */
-    .qr-trigger-btn {
-      position: absolute;
-      top: 16px;
-      right: 16px;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.92);
-      border: 1.5px solid #c8a35a;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      z-index: 10;
-      transition: transform 0.15s ease;
-    }
-
-    .qr-trigger-btn:active {
-      transform: scale(0.93);
-    }
-
     .profile-section {
       display: flex;
       flex-direction: column;
@@ -88,6 +65,12 @@
       box-shadow: 0 8px 22px rgba(0, 0, 0, 0.14);
       margin-bottom: 1dvh;
       flex-shrink: 0;
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+
+    .avatar-outer-ring:active {
+      transform: scale(0.95);
     }
 
     .avatar-inner-ring {
@@ -375,18 +358,9 @@
 
   <main class="screen-container">
 
-    <!-- زر الباركود أعلى اليمين -->
-    <button class="qr-trigger-btn" onclick="openQrModal()" title="عرض وتحميل الباركود">
-      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#1c1c1c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="3" y="3" width="7" height="7"></rect>
-        <rect x="14" y="3" width="7" height="7"></rect>
-        <rect x="14" y="14" width="7" height="7"></rect>
-        <rect x="3" y="14" width="7" height="7"></rect>
-      </svg>
-    </button>
-
     <header class="profile-section">
-      <div class="avatar-outer-ring">
+      <!-- عند الضغط على الصورة الشخصية يفتح الباركود -->
+      <div class="avatar-outer-ring" onclick="openQrModal()" title="اضغط لعرض الباركود">
         <div class="avatar-inner-ring">
           <img id="avatarImg" src="bg.png" alt="ESLAM ELBANBY" crossorigin="anonymous" />
         </div>
@@ -610,7 +584,6 @@
         loadImage("bg.png")
       ]);
 
-      // 1. رسم الخلفية
       if (bgImg) {
         ctx.drawImage(bgImg, 0, 0, W, H);
       } else {
@@ -618,7 +591,6 @@
         ctx.fillRect(0, 0, W, H);
       }
 
-      // 2. رسم الكارت الأبيض الداخلي بإطار ذهبي
       const pW = 740, pH = 960, pX = (W - pW) / 2, pY = 190;
       ctx.save();
       ctx.shadowColor = "rgba(0, 0, 0, 0.12)";
@@ -636,7 +608,6 @@
       ctx.roundRect(pX, pY, pW, pH, 40);
       ctx.stroke();
 
-      // 3. كتابة الاسم وعلامة التوثيق والشعار
       ctx.textAlign = "center";
       ctx.font = "800 36px 'Montserrat', sans-serif";
       ctx.fillStyle = "#1c1c1c";
@@ -646,7 +617,6 @@
       const nameY = pY + 75;
       ctx.fillText(nameText, nameX, nameY);
 
-      // علامة التوثيق الزرقاء
       const badgeX = nameX + nameWidth / 2 + 24;
       const badgeY = nameY - 13;
       ctx.fillStyle = "#0875F7";
@@ -663,7 +633,6 @@
       ctx.lineTo(badgeX + 7, badgeY - 4.5);
       ctx.stroke();
 
-      // EB OFFICE
       ctx.font = "800 28px 'Montserrat', sans-serif";
       const ebW = ctx.measureText("EB ").width;
       const offW = ctx.measureText("OFFICE").width;
@@ -674,7 +643,6 @@
       ctx.fillStyle = "#1c1c1c";
       ctx.fillText("OFFICE", startBrandX + ebW, nameY + 46);
 
-      // الوصف والخط الذهبي
       ctx.textAlign = "center";
       ctx.font = "600 19px 'Montserrat', sans-serif";
       ctx.fillStyle = "#3a3a3a";
@@ -687,7 +655,6 @@
       ctx.lineTo(W / 2 + 35, nameY + 102);
       ctx.stroke();
 
-      // 4. إنشاء الباركود الفعلي القابل للمسح الفوري (Error Correction H)
       const qr = qrcode(0, "H");
       qr.addData(TARGET_URL);
       qr.make();
@@ -703,7 +670,7 @@
       const quiet = 2.5;
       const scale = qrBoxSize / (count + quiet * 2);
       const centerMod = (count - 1) / 2;
-      const avatarModRadius = 4.6; // مساحة آمنة تضمن قراءة الباركود 100%
+      const avatarModRadius = 4.6;
 
       function isFinder(r, c) {
         if (r <= 6 && c <= 6) return true;
@@ -712,7 +679,6 @@
         return false;
       }
 
-      // رسم نقاط الباركود الناعمة
       ctx.fillStyle = "#191715";
       for (let r = 0; r < count; r++) {
         for (let c = 0; c < count; c++) {
@@ -730,7 +696,6 @@
         }
       }
 
-      // رسم مربعات الزوايا الثلاثة (إطار أسود + قلب ذهبي داكن تقرأه الكاميرا فوراً)
       function drawCustomFinder(row, col) {
         const x = qrBoxX + (col + quiet) * scale;
         const y = qrBoxY + (row + quiet) * scale;
@@ -746,7 +711,6 @@
         ctx.roundRect(x + scale, y + scale, sz - 2 * scale, sz - 2 * scale, 11);
         ctx.fill();
 
-        // درجة ذهبي غامق متوافقة 100% مع مستشعرات كاميرا الموبايل
         ctx.fillStyle = "#8B651B";
         ctx.beginPath();
         ctx.roundRect(x + 2 * scale, y + 2 * scale, sz - 4 * scale, sz - 4 * scale, 9);
@@ -757,7 +721,6 @@
       drawCustomFinder(0, count - 7);
       drawCustomFinder(count - 7, 0);
 
-      // 5. رسم الصورة الشخصية الدائرية في منتصف الباركود
       const cx = qrBoxX + qrBoxSize / 2;
       const cy = qrBoxY + qrBoxSize / 2;
       const rad = avatarModRadius * scale;
@@ -794,7 +757,6 @@
         ctx.restore();
       }
 
-      // 6. كتابة SCAN TO CONNECT بالأسفل
       const footY = qrBoxY + qrBoxSize + 62;
       ctx.font = "800 22px 'Montserrat', sans-serif";
       ctx.fillStyle = "#1a1815";
